@@ -31,7 +31,6 @@ public class BatchExecute extends AbstractConnector {
 
     private void batchExecuteQuery(MessageContext messageContext, SnowflakeConnection snowflakeConnection) {
         SnowflakesOperationResult snowflakesOperationResult = new SnowflakesOperationResult(OPERATION_NAME, false);
-        System.out.println("BatchExecute triggered");
         String query = (String) getParameter(messageContext, Constants.EXECUTE_QUERY);
         String payload = (String) getParameter(messageContext, Constants.PAYLOAD);
 

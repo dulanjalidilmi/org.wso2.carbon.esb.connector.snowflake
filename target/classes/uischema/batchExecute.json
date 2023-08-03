@@ -1,0 +1,57 @@
+{
+  "connectorName": "snowflake",
+  "operationName": "batchExecute",
+  "title": "Execute Batch",
+  "help": "<h1>Perform Batch Execution</h1>",
+  "elements": [
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "Connection",
+              "inputType": "connection",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Connection to be used"
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Basic",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "folder",
+                    "displayName": "Mailbox Folder",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "Inbox",
+                    "required": "false",
+                    "helpTip": "Name of the Mailbox folder to retrieve emails from"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "emailID",
+                    "displayName": "Email ID",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Email ID Number of the email to delete"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

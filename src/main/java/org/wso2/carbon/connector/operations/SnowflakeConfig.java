@@ -14,7 +14,6 @@ public class SnowflakeConfig extends AbstractConnector implements ManagedLifecyc
 
     @Override
     public void connect(MessageContext messageContext) throws ConnectException {
-        System.out.println("CONNECT TRIGGERED");
         String accountIdentifier =
                 (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.ACCOUNT_IDENTIFIER);
         String user = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.USER);
@@ -27,7 +26,6 @@ public class SnowflakeConfig extends AbstractConnector implements ManagedLifecyc
     }
 
     private void createConnection(MessageContext messageContext) {
-        System.out.println("CREATE CONNECTION TRIGGERED");
         // todo lets add this to ConnectionConfiguration class
         String connectorName = Constants.CONNECTOR_NAME;
         String connectionName = (String) ConnectorUtils.
