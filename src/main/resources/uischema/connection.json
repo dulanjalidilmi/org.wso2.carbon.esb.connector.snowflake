@@ -1,0 +1,69 @@
+{
+  "connectorName": "snowflake",
+  "connectionName": "batchExecute",
+  "title": "Snowflake Connection",
+  "help": "<h1>Snowflake Connection</h1>",
+  "elements": [
+    {
+      "type": "attribute",
+      "value": {
+        "name": "connectionName",
+        "displayName": "Connection Name",
+        "inputType": "string",
+        "defaultValue": "SNOWFLAKE_CONNECTION_1",
+        "required": "true",
+        "helpTip": "The name for the Snowflake connection",
+        "validation": "nameWithoutSpecialCharactors"
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Basic",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "accountIdentifier",
+                    "displayName": "Snowflake Account Identifier",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Snowflake Account Identifier"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "user",
+                    "displayName": "Snowflake User",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "User"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "password",
+                    "displayName": "Password",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Password"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

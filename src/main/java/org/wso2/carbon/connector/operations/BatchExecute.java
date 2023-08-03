@@ -61,29 +61,21 @@ public class BatchExecute extends AbstractConnector {
                     JSONObject data = jsonArray.getJSONObject(i);
                     int increment = 0;
                     for (String column : columns) {
-                        preparedStatement.setString(++increment, data.get(column).toString());
+                        Object value = data.get(column);
+                        preparedStatement.setString(++increment, (value != null) ? value.toString() : "");
                     }
                     preparedStatement.addBatch();
                 }
                 int[] batchResult = preparedStatement.executeBatch();
                 if (batchResult.length > 0) {
                     snowflakesOperationResult = new SnowflakesOperationResult(OPERATION_NAME, true);
+                    SnowflakeUtils.setResultAsPayload(messageContext, snowflakesOperationResult);
                 }
-//                for (int i = 0; i < batchResult.length; i++) {
-//                    if (batchResult[i] >= 0) {
-//                        System.out.println("Statement " + (i + 1) + " executed successfully.");
-//                    } else if (batchResult[i] == PreparedStatement.SUCCESS_NO_INFO) {
-//                        System.out.println("Statement " + (i + 1) + " executed successfully, but the number of affected rows is unknown.");
-//                    } else if (batchResult[i] == PreparedStatement.EXECUTE_FAILED) {
-//                        System.out.println("Statement " + (i + 1) + " failed to execute.");
-//                    }
-//                }
             } else {
 //                todo
             }
 //            JsonUtil.getJsonPayload(messageContext.setProperty("results", snowflakesOperationResult));
             preparedStatement.close();
-            snowflakeConnection.getConnection().close();
         } catch (Exception e) {
             e.printStackTrace();
         }

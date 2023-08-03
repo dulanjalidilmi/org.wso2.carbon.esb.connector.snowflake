@@ -32,4 +32,12 @@ public class SnowflakesOperationResult {
         this.error = error;
         this.errorMessage = errorMessage;
     }
+
+    public String getOperation() {
+        return operation;
+    }
+
+    public boolean isSuccessful() {
+        return isSuccessful;
+    }
 }
