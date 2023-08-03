@@ -1,0 +1,7 @@
+org/wso2/carbon/connector/operations/Execute.class
+org/wso2/carbon/connector/utils/SnowflakeUtils.class
+org/wso2/carbon/connector/connection/SnowflakeConnection.class
+org/wso2/carbon/connector/utils/Constants.class
+org/wso2/carbon/connector/operations/Query.class
+org/wso2/carbon/connector/snowflakeConnector.class
+org/wso2/carbon/connector/operations/SnowflakeConfig.class

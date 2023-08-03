@@ -1,0 +1,7 @@
+<template name="execute" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="executeQuery" description="executeQuery"/>
+    <parameter name="payload" description="payload"/>
+    <sequence>
+        <class name="org.wso2.carbon.connector.operations.Execute" />
+    </sequence>
+</template>
