@@ -61,7 +61,7 @@ public class BatchExecute extends AbstractConnector {
                     JSONObject data = jsonArray.getJSONObject(i);
                     int increment = 0;
                     for (String column : columns) {
-                        Object value = data.get(column);
+                        Object value = data.opt(column);
                         preparedStatement.setString(++increment, (value != null) ? value.toString() : "");
                     }
                     preparedStatement.addBatch();
