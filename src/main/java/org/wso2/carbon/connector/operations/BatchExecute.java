@@ -66,9 +66,18 @@ public class BatchExecute extends AbstractConnector {
                     }
                     preparedStatement.addBatch();
                 }
+
                 int[] batchResult = preparedStatement.executeBatch();
+                int successfulCount = 0;
+                for (int updateCount : batchResult) {
+                    if (updateCount >= 0) {
+                        successfulCount++;
+                    }
+                }
+
                 if (batchResult.length > 0) {
-                    snowflakesOperationResult = new SnowflakesOperationResult(OPERATION_NAME, true);
+                    String message = "Successfully executed " + successfulCount + " statements";
+                    snowflakesOperationResult = new SnowflakesOperationResult(OPERATION_NAME, true, message);
                     SnowflakeUtils.setResultAsPayload(messageContext, snowflakesOperationResult);
                 }
             } else {

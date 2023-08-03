@@ -26,6 +26,9 @@ public class SnowflakeUtils {
         try {
             jsonObject.put("operation", snowflakesOperationResult.getOperation());
             jsonObject.put("isSuccessful", snowflakesOperationResult.isSuccessful());
+            if (snowflakesOperationResult.getMessage() != null || !snowflakesOperationResult.getMessage().isEmpty()) {
+                jsonObject.put("message", snowflakesOperationResult.getMessage());
+            }
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

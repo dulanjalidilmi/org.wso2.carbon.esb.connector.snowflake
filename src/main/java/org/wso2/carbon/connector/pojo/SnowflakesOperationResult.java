@@ -20,10 +20,18 @@ public class SnowflakesOperationResult {
      */
     private String errorMessage;
 
+    private String message;
+
 
     public SnowflakesOperationResult(String operation, boolean isSuccessful) {
         this.operation = operation;
         this.isSuccessful = isSuccessful;
+    }
+
+    public SnowflakesOperationResult(String operation, boolean isSuccessful, String message) {
+        this.operation = operation;
+        this.isSuccessful = isSuccessful;
+        this.message = message;
     }
 
     public SnowflakesOperationResult(String operation, boolean isSuccessful, Error error, String errorMessage) {
@@ -35,6 +43,10 @@ public class SnowflakesOperationResult {
 
     public String getOperation() {
         return operation;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public boolean isSuccessful() {
