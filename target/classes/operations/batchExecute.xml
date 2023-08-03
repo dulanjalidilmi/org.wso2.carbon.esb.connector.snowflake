@@ -1,0 +1,8 @@
+<template name="batchExecute" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="executeQuery" description="executeQuery"/>
+    <parameter name="payload" description="payload"/>
+    <parameter name="params" description="batchPayload"/>
+    <sequence>
+        <class name="org.wso2.carbon.connector.operations.BatchExecute" />
+    </sequence>
+</template>

@@ -26,9 +26,9 @@
 			<file>execute.xml</file>
 			<description>sample wso2 connector method</description>
 		</component>
-		<component name="listVolume">
-			<file>listVolume.xml</file>
-			<description>Lists volumes that satisfy the given query.</description>
+		<component name="batchExecute" >
+			<file>batchExecute.xml</file>
+			<description>sample wso2 connector method</description>
 		</component>
     </subComponents>    
 </component>

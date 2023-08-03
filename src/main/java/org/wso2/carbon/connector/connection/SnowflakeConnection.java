@@ -41,7 +41,6 @@ public class SnowflakeConnection implements Connection {
     private java.sql.Connection connection;
 
     public SnowflakeConnection(MessageContext messageContext){
-//        Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
         String identifier = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.ACCOUNT_IDENTIFIER);
         String user = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.USER);
         String password = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.PASSWORD);

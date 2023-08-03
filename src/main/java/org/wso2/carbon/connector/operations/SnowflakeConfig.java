@@ -22,11 +22,7 @@ public class SnowflakeConfig extends AbstractConnector implements ManagedLifecyc
 
         // todo validation of data
 
-
-
         createConnection(messageContext);
-
-//        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
 
     }
 

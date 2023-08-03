@@ -5,8 +5,11 @@ import org.wso2.carbon.connector.connection.SnowflakeConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.utils.Constants;
 import org.wso2.carbon.connector.utils.SnowflakeUtils;
+
+import java.sql.PreparedStatement;
 
 public class Execute extends AbstractConnector {
     @Override
@@ -35,6 +38,28 @@ public class Execute extends AbstractConnector {
         }
 
         log.info("executing...");
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = snowflakeConnection.getConnection().prepareStatement(query);
+
+            preparedStatement.setString(1, "John");
+            preparedStatement.setString(2, "Jerome");
+            preparedStatement.setString(3, "WSO2");
+
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            snowflakeConnection.getConnection().createStatement().execute(query);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                preparedStatement.close();
+                snowflakeConnection.getConnection().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 }
