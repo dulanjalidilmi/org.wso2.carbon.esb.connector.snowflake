@@ -44,9 +44,6 @@ public class SnowflakeConnection implements Connection {
         String identifier = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.ACCOUNT_IDENTIFIER);
         String user = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.USER);
         String password = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.PASSWORD);
-        log.info("identifier: " + identifier);
-        log.info("user: " + user);
-        log.info("password: " + password);
         String driver = "net.snowflake.client.jdbc.SnowflakeDriver";
 
         try {
