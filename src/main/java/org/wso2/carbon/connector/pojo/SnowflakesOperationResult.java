@@ -52,4 +52,12 @@ public class SnowflakesOperationResult {
     public boolean isSuccessful() {
         return isSuccessful;
     }
+
+    public Error getError() {
+        return error;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 }

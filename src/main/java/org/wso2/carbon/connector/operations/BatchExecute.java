@@ -1,68 +1,83 @@
 package org.wso2.carbon.connector.operations;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.synapse.MessageContext;
-import org.apache.synapse.commons.json.JsonUtil;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.wso2.carbon.connector.connection.SnowflakeConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.exception.SnowflakeOperationException;
 import org.wso2.carbon.connector.pojo.SnowflakesOperationResult;
 import org.wso2.carbon.connector.utils.Constants;
+import org.wso2.carbon.connector.utils.Error;
 import org.wso2.carbon.connector.utils.SnowflakeUtils;
 
 import java.sql.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static java.lang.String.format;
 
 public class BatchExecute extends AbstractConnector {
+
     private static final String OPERATION_NAME = "batchExecute";
+    private static final String ERROR_MESSAGE = "Error occurred while performing snowflake:batchExecute operation.";
+
     @Override
-    public void connect(MessageContext messageContext) throws ConnectException {
+    public void connect(MessageContext messageContext) {
         ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        String connectionName = null;
+        SnowflakeConnection snowflakeConnection = null;
 
-        String connectionName = SnowflakeUtils.getConnectionName(messageContext);
-        SnowflakeConnection snowflakeConnection = (SnowflakeConnection) handler.getConnection(Constants.CONNECTOR_NAME,
-                connectionName);
-
-        batchExecuteQuery(messageContext, snowflakeConnection);
+        try {
+            connectionName = SnowflakeUtils.getConnectionName(messageContext);
+            snowflakeConnection = (SnowflakeConnection) handler.getConnection(Constants.CONNECTOR_NAME, connectionName);
+            SnowflakesOperationResult result = batchExecuteQuery(messageContext, snowflakeConnection);
+            SnowflakeUtils.setResultAsPayload(messageContext, result);
+        } catch (InvalidConfigurationException e) {
+            handleError(messageContext, e, Error.INVALID_CONFIGURATION, ERROR_MESSAGE);
+        } catch (SnowflakeOperationException e) {
+            handleError(messageContext, e, Error.OPERATION_ERROR, ERROR_MESSAGE);
+        } catch (ConnectException e) {
+            handleError(messageContext, e, Error.CONNECTION_ERROR, ERROR_MESSAGE);
+        } finally {
+            if (snowflakeConnection != null) {
+                handler.returnConnection(Constants.CONNECTOR_NAME, connectionName, snowflakeConnection);
+            }
+        }
     }
 
-    private void batchExecuteQuery(MessageContext messageContext, SnowflakeConnection snowflakeConnection) {
-        SnowflakesOperationResult snowflakesOperationResult = new SnowflakesOperationResult(OPERATION_NAME, false);
+    private SnowflakesOperationResult batchExecuteQuery(MessageContext messageContext, SnowflakeConnection snowflakeConnection)
+            throws InvalidConfigurationException, SnowflakeOperationException {
+        SnowflakesOperationResult snowflakesOperationResult =
+                new SnowflakesOperationResult(OPERATION_NAME, false);
         String query = (String) getParameter(messageContext, Constants.EXECUTE_QUERY);
         String payload = (String) getParameter(messageContext, Constants.PAYLOAD);
 
-        if(query == null || query.isEmpty()) {
-            // todo throw exception
-            log.error("Query is empty");
-            return;
+        if (StringUtils.isEmpty(query)) {
+            throw new InvalidConfigurationException("Execute Query is not provided.");
         }
-        if(payload == null) {
-            // todo throw exception
-            log.error("Payload is empty");
-            return;
+
+        if (StringUtils.isEmpty(payload)) {
+            throw new InvalidConfigurationException("Empty Payload is provided.");
         }
-        JSONArray jsonArray = null;
+
+        JsonArray insertArray = JsonParser.parseString(payload).getAsJsonArray();
+        String[] columns = SnowflakeUtils.getColumnNames(query);
+        PreparedStatement preparedStatement = null;
 
         try {
-            jsonArray = new JSONArray(payload);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String[] columns = getColumnNames(query);
-
-        try {
-            PreparedStatement preparedStatement = snowflakeConnection.getConnection().prepareStatement(query);
-            if (jsonArray.length()>0 && columns.length>0) {
-                for (int i = 0; i<jsonArray.length(); i++) {
-                    JSONObject data = jsonArray.getJSONObject(i);
+            preparedStatement = snowflakeConnection.getConnection().prepareStatement(query);
+            if (insertArray.size()>0 && columns.length>0) {
+                for (int i = 0; i<insertArray.size(); i++) {
+                    JsonObject insertObject = insertArray.get(i).getAsJsonObject();
                     int increment = 0;
                     for (String column : columns) {
-                        Object value = data.opt(column);
-                        preparedStatement.setString(++increment, (value != null) ? value.toString() : "");
+                        JsonElement value = insertObject.get(column);
+                        preparedStatement.setString(++increment, (value != null) ? value.getAsString() : "");
                     }
                     preparedStatement.addBatch();
                 }
@@ -78,28 +93,26 @@ public class BatchExecute extends AbstractConnector {
                 if (batchResult.length > 0) {
                     String message = "Successfully executed " + successfulCount + " statements";
                     snowflakesOperationResult = new SnowflakesOperationResult(OPERATION_NAME, true, message);
-                    SnowflakeUtils.setResultAsPayload(messageContext, snowflakesOperationResult);
                 }
-            } else {
-//                todo
             }
-//            JsonUtil.getJsonPayload(messageContext.setProperty("results", snowflakesOperationResult));
-            preparedStatement.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            return snowflakesOperationResult;
+        } catch (SQLException e) {
+            throw new SnowflakeOperationException("Error occurred while executing the query.", e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            } catch (SQLException e) {
+                String error = format("%s:%s Error while closing the prepared statement.",
+                        Constants.CONNECTOR_NAME, OPERATION_NAME);
+                log.error(error, e);
+            }
         }
     }
 
-    private String[] getColumnNames(String query) {
-        // Using regular expression to match the column names inside the parentheses
-        Pattern pattern = Pattern.compile("\\((.*?)\\)");
-        Matcher matcher = pattern.matcher(query);
-        String[] columnNames = null;
-
-        if (matcher.find()) {
-            String columnNamesStr = matcher.group(1);
-            columnNames = columnNamesStr.split("\\s*,\\s*");
-        }
-        return columnNames;
+    private void handleError(MessageContext messageContext, Exception e, Error error, String errorDetail) {
+        SnowflakeUtils.setError(OPERATION_NAME, messageContext, e, error);
+        handleException(errorDetail, e, messageContext);
     }
 }

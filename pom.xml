@@ -43,10 +43,16 @@
         <bouncycastle.version>1.55</bouncycastle.version>
         <rampart.apache.version>1.6.1-wso2v18</rampart.apache.version>
         <rampart.wso2.version>1.6.1.wso2v18</rampart.wso2.version>
+        <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
         <skip-tests>true</skip-tests>
     </properties>
 
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>net.snowflake</groupId>-->
+<!--            <artifactId>snowflake-jdbc</artifactId>-->
+<!--            <version>3.14.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.synapse</groupId>
             <artifactId>synapse-core</artifactId>
@@ -61,6 +67,11 @@
             <groupId>org.json.wso2</groupId>
             <artifactId>json</artifactId>
             <version>${json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${com.google.code.gson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.automation</groupId>

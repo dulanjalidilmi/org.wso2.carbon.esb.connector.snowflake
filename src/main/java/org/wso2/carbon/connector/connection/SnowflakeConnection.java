@@ -18,16 +18,13 @@
 
 package org.wso2.carbon.connector.connection;
 
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.synapse.MessageContext;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.connection.Connection;
 import org.wso2.carbon.connector.core.connection.ConnectionConfig;
-import org.wso2.carbon.connector.core.util.ConnectorUtils;
+import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.utils.Constants;
 
 import java.sql.DriverManager;
@@ -40,19 +37,19 @@ public class SnowflakeConnection implements Connection {
     private static Log log = LogFactory.getLog(SnowflakeConnection.class);
     private java.sql.Connection connection;
 
-    public SnowflakeConnection(MessageContext messageContext){
-        String identifier = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.ACCOUNT_IDENTIFIER);
-        String user = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.USER);
-        String password = (String) ConnectorUtils.lookupTemplateParamater(messageContext, Constants.PASSWORD);
-        String driver = "net.snowflake.client.jdbc.SnowflakeDriver";
+    public SnowflakeConnection(ConnectionConfiguration connectionConfiguration)
+            throws SQLException, InvalidConfigurationException {
+        String identifier = connectionConfiguration.getAccountIdentifier();
+        String user = connectionConfiguration.getUser();
+        String password = connectionConfiguration.getPassword();
+        String driver = Constants.SNOWFLAKE_DRIVER;
 
         try {
             Class.forName(driver);
-            connection = DriverManager.getConnection(identifier, user, password);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            this.connection = DriverManager.getConnection(identifier, user, password);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new InvalidConfigurationException(
+                    String.format("Error occurred while loading the Driver: %s", driver), e);
         }
     }
 
@@ -66,11 +63,13 @@ public class SnowflakeConnection implements Connection {
     }
 
     @Override
-    public void close() throws ConnectException {
-        //no requirement to implement for now
-    }
-
-    public void returnConnection() {
-        //no requirement to implement for now
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                log.error("Error while closing the connection", e);
+            }
+        }
     }
 }

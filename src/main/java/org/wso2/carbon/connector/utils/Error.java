@@ -1,6 +1,13 @@
 package org.wso2.carbon.connector.utils;
 
-public class Error {
+public enum Error {
+
+    CONNECTION_ERROR("700601", "SNOWFLAKE:CONNECTION_ERROR"),
+    INVALID_CONFIGURATION("700602", "SNOWFLAKE:INVALID_CONFIGURATION"),
+    OPERATION_ERROR("700603", "SNOWFLAKE:OPERATION_ERROR"),
+    RESPONSE_GENERATION("700604", "EMAIL:RESPONSE_GENERATION"),
+    INVALID_RESPONSE("700605", "SNOWFLAKE:INVALID_RESPONSE");
+
     private final String code;
     private final String message;
 
